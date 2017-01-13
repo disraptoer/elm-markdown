@@ -60,7 +60,7 @@ update msg model =
                 options = model.options
                 updtOptions =
                     { options
-                        | html = htmlConfig
+                        | rawHtml = htmlConfig
                     }
             
             in
@@ -82,7 +82,11 @@ view model =
             , ("max-width", "1080px")
             ]
         ]
-        [ h1 [] [ text "Pure Elm Markdown" ]
+        [ h1 []
+            [ text "Pure Elm Markdown / "
+            , a [ href "https://github.com/pablohirafuji/elm-markdown/blob/master/examples/Demo.elm"]
+                [ text "Code" ]
+            ]
         , div [ style [ ("display", "flex") ] ]
             [ div [ style [ ("width", "50%") ] ]
                 [ textarea
