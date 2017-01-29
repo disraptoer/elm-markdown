@@ -3,8 +3,9 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Events exposing (onInput)
 import Markdown
+import Markdown.Config as Config exposing (defaultOptions)
 import Test.View
 
 
@@ -20,18 +21,20 @@ main =
 
 type alias Model =
     { textarea : String
+    , testModel : Test.View.Model
     }
 
 
 init : Model
 init =
     { textarea = ""
+    , testModel = Test.View.initModel
     }
 
 
 type Msg
     = TextAreaInput String
-    | Markdown
+    | TestMsg Test.View.Msg
 
 
 
@@ -41,21 +44,30 @@ update msg model =
         TextAreaInput str ->
             { model | textarea = str } ! []
 
-        Markdown ->
-            model ! []
+
+        TestMsg testMsg ->
+            { model | testModel =
+                Test.View.update testMsg model.testModel
+            } ! []
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Pure Elm Markdown" ]
+        [ h1 [] [ text "Pure Elm markdown tests" ]
         , textarea
             [ onInput TextAreaInput
             , defaultValue model.textarea ] []
         , br [] []
-        , Html.map (always Markdown)
-            <| div []
-            <| Markdown.toHtml model.textarea
-        , Html.map (always Markdown) Test.View.view
+        , div []
+            <| Markdown.toHtml (Just customOptions) model.textarea
+        , Html.map TestMsg
+            <| Test.View.view model.testModel
         ]
 
+
+customOptions : Config.Options
+customOptions =
+    { defaultOptions
+        | rawHtml = Config.ParseUnsafe
+    }

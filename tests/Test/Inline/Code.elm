@@ -2,7 +2,7 @@ module Test.Inline.Code exposing (run)
 
 
 import Html exposing (..)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (href, attribute)
 import Test.Helpers exposing (..)
 
 
@@ -10,7 +10,7 @@ import Test.Helpers exposing (..)
 -- Based on http://spec.commonmark.org/0.27/#code-spans
 
 
-run : List (Output)
+run : List (Output msg)
 run =
     [ testEq 312
         []
@@ -120,7 +120,9 @@ run =
         []
         "<a href=\"`\">`\n"
         [ p []
-            [ a [ href "`" ] [ text "`"] ]
+            [ a [ attribute "href" "`" ] []
+            , text "`"
+            ]
         ]
 
     , testEq 324

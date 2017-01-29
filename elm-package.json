@@ -1,6 +1,6 @@
 {
-    "version": "1.0.0",
-    "summary": "Pure Elm markdown.",
+    "version": "2.0.0",
+    "summary": "Pure Elm markdown parsing and rendering.",
     "repository": "https://github.com/pablohirafuji/elm-markdown.git",
     "license": "BSD3",
     "source-directories": [
@@ -8,6 +8,8 @@
     ],
     "exposed-modules": [
         "Markdown",
+        "Markdown.Block",
+        "Markdown.Inline",
         "Markdown.Config"
     ],
     "dependencies": {

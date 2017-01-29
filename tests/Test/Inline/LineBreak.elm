@@ -2,6 +2,7 @@ module Test.Inline.LineBreak exposing (run)
 
 
 import Html exposing (..)
+import Html.Attributes exposing (href, attribute)
 import Test.Helpers exposing (..)
 
 
@@ -9,7 +10,7 @@ import Test.Helpers exposing (..)
 -- Based on http://spec.commonmark.org/0.27/#hard-line-breaks
 
 
-run : List (Output)
+run : List (Output msg)
 run =
     [ testEq 602
         []
@@ -113,12 +114,12 @@ run =
     , testEq 611
         []
         "<a href=\"foo  \nbar\">\n"
-        []
+        [ a [ attribute "href" "foo  \nbar" ] [] ]
 
     , testEq 612
         []
         "<a href=\"foo\\\nbar\">\n"
-        []
+        [ a [ attribute "href" "foo\\\nbar" ] [] ]
 
     , testEq 613
         []

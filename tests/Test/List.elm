@@ -10,7 +10,7 @@ import Test.Helpers exposing (..)
 -- Based on http://spec.commonmark.org/0.27/#lists
 
 
-run : List (Output)
+run : List (Output msg)
 run =
     [ testEq 262
         [ p [] [ text "A list is a sequence of one or more list items of the same type. The list items may be separated by any number of blank lines." ]
@@ -68,13 +68,31 @@ run =
         [ p [] [ text "To separate consecutive lists of the same type, or to separate a list from an indented code block that would otherwise be parsed as a subparagraph of the final list item, you can insert a blank HTML comment:" ]
         ]
         "- foo\n- bar\n\n<!-- -->\n\n- baz\n- bim"
-        [ ul [] [ li [] [ text "foo" ], li [] [ text "bar" ] ] , text "<!-- -->", ul [] [ li [] [ text "baz" ], li [] [ text "bim" ] ] ]
+        [ ul []
+            [ li [] [ text "foo" ]
+            , li [] [ text "bar" ]
+            ]
+        , p [] [ text "<!-- -->" ]
+        , ul []
+            [ li [] [ text "baz" ]
+            , li [] [ text "bim" ]
+            ]
+        ]
 
 
     , testEq 270
         []
         "-   foo\n\n    notcode\n\n-   foo\n\n<!-- -->\n\n    code"
-        [ ul [] [ li [] [ p [] [ text "foo" ], p [] [ text "notcode" ] ], li [] [ p [] [ text "foo" ] ] ], text "<!-- -->", pre [] [ code [] [ text "code\n" ] ] ]
+        [ ul []
+            [ li []
+                [ p [] [ text "foo" ]
+                , p [] [ text "notcode" ]
+                ]
+            , li [] [ p [] [ text "foo" ] ] ]
+            , p [] [ text "<!-- -->" ]
+            , pre [] [ code [] [ text "code\n" ]
+            ]
+        ]
 
 
     , testEq 271

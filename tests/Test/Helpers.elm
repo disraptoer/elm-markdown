@@ -4,29 +4,29 @@ module Test.Helpers exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown
+import Markdown.Config as Config exposing (defaultOptions)
+
+type alias Output msg = Result (Html msg) (Html msg)
 
 
-type alias Output = Maybe (Html Never)
-
-
-testEq : Int -> List (Html Never) -> String -> List (Html Never) -> (Output)
+testEq : Int -> List (Html msg) -> String -> List (Html msg) -> Output msg
 testEq number description input expectedResult =
     let
-        result : List (Html Never)
+        result : List (Html msg)
         result =
-            Markdown.toHtml input
+            Markdown.toHtml (Just customOptions) input
 
         isValid =
             toString result == toString expectedResult
 
         backgroundColor =
             if isValid then
-                "green"
+                "#90EE90"
 
             else
                 "#EEB4B4"
 
-        view : Html Never
+        view : Html msg
         view =
             div [] <|
                 description ++
@@ -47,7 +47,14 @@ testEq number description input expectedResult =
 
     in
         if isValid then
-            Nothing
+            Result.Ok view
             
         else
-            Just view
+            Result.Err view
+
+
+customOptions : Config.Options
+customOptions =
+    { defaultOptions
+        | rawHtml = Config.ParseUnsafe
+    }

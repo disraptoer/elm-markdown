@@ -2,7 +2,7 @@ module Test.Inline.Escape exposing (run)
 
 
 import Html exposing (..)
-import Html.Attributes exposing (href, src, class, title)
+import Html.Attributes exposing (href, src, class, title, attribute)
 import Test.Helpers exposing (..)
 
 
@@ -10,7 +10,7 @@ import Test.Helpers exposing (..)
 -- Based on http://spec.commonmark.org/0.27/#backslash-escapes
 
 
-run : List (Output)
+run : List (Output msg)
 run =
     [ testEq 286
         []
@@ -103,7 +103,7 @@ run =
     , testEq 296
         []
         "<a href=\"/bar\\/)\">\n"
-        []
+        [ a [ attribute "href" "/bar\\/)" ] [] ]
 
     , testEq 297
         []

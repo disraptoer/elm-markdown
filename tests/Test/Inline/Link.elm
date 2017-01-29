@@ -10,7 +10,7 @@ import Test.Helpers exposing (..)
 -- Based on http://spec.commonmark.org/0.27/#links
 
 
-run : List (Output)
+run : List (Output msg)
 run =
     [ testEq 456
         []
@@ -73,7 +73,10 @@ run =
         []
         "[link](<foo\nbar>)\n"
         [ p []
-            [ text "[link](<foo\nbar>)" ]
+            [ text "[link]("
+            , node "foo" [ attribute "bar" "bar" ] []
+            , text ")"
+            ]
         ]
 
     , testEq 464
@@ -361,7 +364,11 @@ run =
     , testEq 492
         []
         "[foo <bar attr=\"](baz)\">\n"
-        []
+        [ p []
+            [ text "[foo "
+            , node "bar" [ attribute "attr" "](baz)" ] []
+            ]
+        ]
 
     , testEq 493
         []
@@ -420,8 +427,9 @@ run =
                     [ text "foo "
                     , strong []
                         [ text "bar" ]
+                    , text " "
                     , code []
-                        [ text " #" ]
+                        [ text "#" ]
                     ]
                 ]
             ]
