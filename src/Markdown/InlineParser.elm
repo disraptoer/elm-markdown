@@ -307,6 +307,7 @@ tokenize model =
                     )
                 |> (++) (findAngleBracketLTokens model.rawText)
                 |> (++) (findAngleBracketRTokens model.rawText)
+                |> (++) (findHashToken model.rawText)
                 |> List.sortBy .index
     }
 
@@ -351,6 +352,25 @@ regMatchToCodeToken regMatch =
 
 
 
+----------------------------------------------------------------------
+--------------------------- Custom Amie Tokens --------------------------
+----------------------------------------------------------------------
+
+
+findHashToken : String -> List Token
+findHashToken str =
+    Regex.find Regex.All hashToken str
+        --regMatchToEmphasisToken handles to my knowledge the END of the match string
+        |> List.filterMap (regMatchToEmphasisToken ' ' str)
+
+
+hashToken : Regex
+hashToken =
+    Regex.regex "(\\\\*)([^@])?(\\@+)([^@])?"
+
+
+
+--"\\B(\\@[a-zA-Z0-9]+\\b)"
 ----------------------------------------------------------------------
 --------------------------- Emphasis Tokens --------------------------
 ----------------------------------------------------------------------
@@ -816,6 +836,7 @@ type Type
     | ImageType ( String, Maybe String ) -- ( Src, Maybe Title )
     | HtmlType HtmlModel
     | EmphasisType Int -- Tag length
+    | KeyType
 
 
 organizeParserMatches : Parser -> Parser
@@ -1775,13 +1796,33 @@ emphasisToMatch closeToken tokensTail model ( openToken, innerTokens, remainToke
 
         match : Match
         match =
-            tokenPairToMatch
-                model
-                (\s -> s)
-                (EmphasisType updtOpenToken.length)
-                updtOpenToken
-                updtCloseToken
-                (List.reverse innerTokens)
+            case closeToken.meaning of
+                EmphasisToken char _ ->
+                    if char == ' ' then
+                        tokenPairToMatch
+                            model
+                            (\s -> s)
+                            (KeyType)
+                            updtOpenToken
+                            updtCloseToken
+                            (List.reverse innerTokens)
+                    else
+                        tokenPairToMatch
+                            model
+                            (\s -> s)
+                            (EmphasisType updtOpenToken.length)
+                            updtOpenToken
+                            updtCloseToken
+                            (List.reverse innerTokens)
+
+                _ ->
+                    tokenPairToMatch
+                        model
+                        (\s -> s)
+                        (EmphasisType updtOpenToken.length)
+                        updtOpenToken
+                        updtCloseToken
+                        (List.reverse innerTokens)
     in
         ( updtTokensTail
         , { model
@@ -1870,6 +1911,9 @@ matchToInline (Match match) =
         EmphasisType length ->
             Emphasis length
                 (matchesToInlines match.matches)
+
+        KeyType ->
+            Key (matchesToInlines match.matches)
 
 
 

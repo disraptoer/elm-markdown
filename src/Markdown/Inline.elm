@@ -55,6 +55,7 @@ type Inline i
     | Image String (Maybe String) (List (Inline i))
     | HtmlInline String (List ( String, Maybe String )) (List (Inline i))
     | Emphasis Int (List (Inline i))
+    | Key (List (Inline i))
     | Custom i (List (Inline i))
 
 
@@ -168,6 +169,9 @@ defaultHtml customTransformer inline =
             Custom _ inlines ->
                 text ""
 
+            Key keys ->
+                Html.h6 [ Html.Attributes.style [ ( "color", "red" ) ] ] (List.map transformer keys)
+
 
 attributesToHtmlAttributes : List Attribute -> List (Html.Attribute msg)
 attributesToHtmlAttributes =
@@ -230,3 +234,6 @@ extractTextHelp inline text =
 
         Custom _ inlines ->
             text ++ extractText inlines
+
+        Key keys ->
+            text ++ extractText keys
