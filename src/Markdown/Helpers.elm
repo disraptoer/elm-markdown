@@ -1,16 +1,20 @@
 module Markdown.Helpers exposing (..)
 
-
 import Dict exposing (Dict)
 import Regex exposing (Regex)
 import Markdown.Entity as Entity
 
 
 type alias References =
-    Dict String ( String, Maybe String ) -- Label ( Url, Maybe Title )
+    Dict String ( String, Maybe String )
 
 
-type alias Attribute = ( String, Maybe String )
+
+-- Label ( Url, Maybe Title )
+
+
+type alias Attribute =
+    ( String, Maybe String )
 
 
 insideSquareBracketRegex : String
@@ -20,7 +24,9 @@ insideSquareBracketRegex =
 
 titleRegex : String
 titleRegex =
-    "(?:[" ++ whiteSpaceChars ++ "]+"
+    "(?:["
+        ++ whiteSpaceChars
+        ++ "]+"
         ++ "(?:'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|"
         ++ "\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|"
         ++ "\\(([^\\)\\\\]*(?:\\\\.[^\\)\\\\]*)*)\\)))?"
@@ -30,7 +36,7 @@ prepareRefLabel : String -> String
 prepareRefLabel =
     cleanWhitespaces
         >> String.toLower
-        
+
 
 indentLength : String -> Int
 indentLength =
@@ -51,9 +57,8 @@ indentLine indentLength =
     Regex.replace Regex.All (Regex.regex "\\t") (\_ -> "    ")
         >> Regex.replace
             (Regex.AtMost 1)
-            (Regex.regex ("^ {0," ++ toString indentLength ++ "}" ))
+            (Regex.regex ("^ {0," ++ toString indentLength ++ "}"))
             (\_ -> "")
-
 
 
 escapableRegex : Regex
@@ -71,13 +76,15 @@ formatStr str =
 
 replaceEscapable : String -> String
 replaceEscapable =
-    Regex.replace Regex.All escapableRegex
+    Regex.replace Regex.All
+        escapableRegex
         (\regexMatch ->
             case regexMatch.submatches of
-                Just backslashes :: Just escapedStr :: _ ->
+                (Just backslashes) :: (Just escapedStr) :: _ ->
                     String.repeat
-                        (String.length backslashes // 2) "\\"
-                            ++ escapedStr
+                        (String.length backslashes // 2)
+                        "\\"
+                        ++ escapedStr
 
                 _ ->
                     regexMatch.match
@@ -90,9 +97,11 @@ returnFirstJust maybes =
         process : Maybe a -> Maybe a -> Maybe a
         process a maybeFound =
             case maybeFound of
-                Just found -> Just found
-                Nothing -> a
+                Just found ->
+                    Just found
 
+                Nothing ->
+                    a
     in
         List.foldl process Nothing maybes
 
@@ -110,7 +119,7 @@ cleanWhitespaces =
             (\_ -> " ")
 
 
-ifError : ( x -> Result x a) -> Result x a -> Result x a
+ifError : (x -> Result x a) -> Result x a -> Result x a
 ifError function result =
     case result of
         Result.Ok _ ->
